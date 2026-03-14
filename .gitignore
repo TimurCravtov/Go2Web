@@ -1,0 +1,37 @@
+# Binaries for programs
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, can be built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with the -o parameter
+*.out
+
+# Dependency directories (remove the "vendor/" line if you wish to track vendor libraries in your version control)
+vendor/
+
+# Project-local vendored dependencies for Go 1.11+ modules
+# vendor/
+
+# Environment files
+.env
+
+# Cross-compilation binaries
+# For example, set GOARCH=amd64 GOOS=linux go build -o myprogram-linux-amd64
+# myprogram-linux-amd64*
+
+# IDE specific files
+.idea/             # JetBrains IDEs (e.g., GoLand)
+.vscode/           # VS Code
+*.sublime-project  # Sublime Text
+*.sublime-workspace
+*.creator          # Qt Creator
+*.user             # Qt Creator
+
+# Operating system files
+.DS_Store          # macOS
+Thumbs.db          # Windows
