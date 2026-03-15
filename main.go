@@ -33,6 +33,6 @@ func main() {
     
     slog.SetDefault(logger)
 
-	fmt.Println(html.ParsePage("https://point.md", true))
+	fmt.Println(html.ParsePage("https://www.point.md", true, true))
 
 }

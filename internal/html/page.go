@@ -11,7 +11,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-func ParsePage(url string, withCache bool) (string, error) {
+func ParsePage(url string, withCache bool, withRedirects bool) (string, error) {
 
     var res *connect.HttpResponse
     var err error
@@ -29,9 +29,17 @@ func ParsePage(url string, withCache bool) (string, error) {
         res, err = connect.Get(url, nil, headers)
     }
 
-
     if err != nil {
         return "", err
+    }
+
+    if withRedirects {
+        slog.Debug("Handling redirects")
+        redirectGet := connect.WithRedirects(connect.Get)
+        res, err = redirectGet(url, nil, map[string]string{})
+        if err != nil {
+            return "", err
+        }
     }
 
 	reader := bytes.NewReader(res.Body)
