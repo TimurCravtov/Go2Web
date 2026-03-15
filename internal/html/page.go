@@ -11,11 +11,7 @@ import (
 
 func ParsePage(url string) (string, error) {
 
-    var headers = map[string]string{
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-    }
-
-    res, err := connect.Get(url, nil, headers)
+    res, err := connect.Get(url, nil, nil)
     if err != nil {
         return "", err
     }
