@@ -6,7 +6,6 @@ import (
 	"strings"
 	"go2web/internal/connect"
 	"golang.org/x/net/html" 
-    "time"
 	"regexp"
 )
 
@@ -16,7 +15,7 @@ func ParsePage(url string, withCache bool) (string, error) {
     var err error
 
     if withCache {
-        cache := connect.NewFileCache("cache", 10*time.Minute)
+        cache := connect.NewFileCache("cache")
         cachedGet := cache.WithCache(connect.Get)
         res, err = cachedGet(url, nil, map[string]string{})
     } else {

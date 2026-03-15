@@ -8,6 +8,9 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	"net/http"
+	"regexp"
+	"strconv"
 )
 
 type GetFunc func(url string, body []byte, headers map[string]string) (*HttpResponse, error)
@@ -19,14 +22,12 @@ type CacheEntry struct {
 
 type FileCache struct {
 	CacheDir string
-	Duration time.Duration
 }
 
-func NewFileCache(dir string, duration time.Duration) *FileCache {
+func NewFileCache(dir string) *FileCache {
 	os.MkdirAll(dir, os.ModePerm)
 	return &FileCache{
 		CacheDir: dir,
-		Duration: duration,
 	}
 }
 
@@ -78,14 +79,47 @@ func (c *FileCache) tryGet(cacheFile string) *HttpResponse {
 }
 
 func (c *FileCache) doCache(cacheFile string, resp *HttpResponse) {
-	entry := CacheEntry{
-		ValidUntil: time.Now().Add(c.Duration),
-		Response:   resp,
-	}
+    headers := resp.Headers
+    
+    // Default: do not cache unless we find a directive
+    var duration time.Duration = 0
 
-	if data, err := json.Marshal(entry); err == nil {
-		os.WriteFile(cacheFile, data, 0644)
-	}
+    if val, ok := headers["Cache-Control"]; ok {
+        // Look for max-age=<seconds>
+        if strings.Contains(val, "no-store") || strings.Contains(val, "private") {
+            return // Respect "no-store" or "private" by not caching
+        }
+
+        // Use a regex or string splitting to find max-age
+        re := regexp.MustCompile(`max-age=(\d+)`)
+        matches := re.FindStringSubmatch(val)
+        if len(matches) > 1 {
+            seconds, _ := strconv.Atoi(matches[1])
+            duration = time.Duration(seconds) * time.Second
+        }
+    }
+
+    // Fallback to Expires header if max-age is missing
+    if duration == 0 {
+        if expVal, ok := headers["Expires"]; ok {
+            if expTime, err := http.ParseTime(expVal); err == nil {
+                duration = time.Until(expTime)
+            }
+        }
+    }
+
+    if duration <= 0 {
+        return // Don't cache if no valid duration is found
+    }
+
+    entry := CacheEntry{
+        ValidUntil: time.Now().Add(duration),
+        Response:   resp,
+    }
+
+    if data, err := json.Marshal(entry); err == nil {
+        os.WriteFile(cacheFile, data, 0644)
+    }
 }
 
 func simplifyURL(url string) string {

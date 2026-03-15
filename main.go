@@ -1,15 +1,15 @@
 package main
 
 import (
-	"go2web/internal/html"
 	"fmt"
+	"go2web/internal/html"
 )
 
 func main() {
 	// engine := search_engines.NewStartpageSearchEngine("https://www.startpage.com/sp/search?query=")
 	// response, err := engine.Search("cats", 1)
 
-	// fmt.Println(calvin.AsciiFont("STARTPAGE")) 
+	// fmt.Println(calvin.AsciiFont("STARTPAGE"))
 
 	// if err != nil {
 	// 	fmt.Printf("Error: %v\n", err)
@@ -22,6 +22,6 @@ func main() {
 	// 	fmt.Println("--------------------------------------------------")
 	// }
 
-	fmt.Println(html.ParsePage("point.md", true))
+	fmt.Println(html.ParsePage("https://point.md", true))
 
 }

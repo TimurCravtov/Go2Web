@@ -35,3 +35,5 @@ vendor/
 # Operating system files
 .DS_Store          # macOS
 Thumbs.db          # Windows
+
+cache/
