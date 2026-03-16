@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"go2web/internal/connect"
 	"go2web/internal/html"
+	"math"
 	"strings"
-
 	"github.com/spf13/cobra"
 )
 
@@ -24,7 +24,13 @@ func HandleUrlRequest(cmd *cobra.Command, args []string) {
 		getter = cache.WithCache(getter)
 	}
 
-	getter = connect.WithRedirects(getter, 3)
+	redirectCount, _ := cmd.Flags().GetInt("max-redirects")
+	if redirectCount < 0 {
+		redirectCount = math.MaxInt
+	}
+	if redirectCount >= 0 {
+		getter = connect.WithRedirects(getter, redirectCount)
+	}
 
 	response, err := html.ParsePage(url, getter)
 	if err != nil {
