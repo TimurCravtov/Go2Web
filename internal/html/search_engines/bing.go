@@ -19,7 +19,7 @@ func NewBingSearchEngine(searchURL string) *BingSearchEngine {
 	return &BingSearchEngine{searchURL: searchURL}
 }
 
-func (b *BingSearchEngine) Search(query string, get connect.GetFunc) ([]html.SearchResult, error) {
+func (b *BingSearchEngine) Search(query string, page int, get connect.GetFunc) ([]html.SearchResult, error) {
 	var headers = map[string]string{
 		"User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0",
 		"Accept-Language": "en-US,en;q=0.9",

@@ -18,7 +18,7 @@ func NewDuckSearchEngine(searchURL string) *DuckSearchEngine {
 	return &DuckSearchEngine{searchURL: searchURL}
 }
 
-func (d *DuckSearchEngine) Search(query string, get connect.GetFunc) ([]html.SearchResult, error) {
+func (d *DuckSearchEngine) Search(query string, page int, get connect.GetFunc) ([]html.SearchResult, error) {
 	// 'kl=uk-en' forces United Kingdom results
 	reqUrl := fmt.Sprintf("https://duckduckgo.com/lite/?q=%s&kl=uk-en", url.QueryEscape(query))
 

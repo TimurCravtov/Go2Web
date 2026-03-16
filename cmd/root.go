@@ -1,34 +1,24 @@
-/*
-Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-
-*/
 package cmd
 
 import (
+	"fmt"
 	"os"
-
+	"go2web/internal/cli"
 	"github.com/spf13/cobra"
 )
 
-
-
-// rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "surfer",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Use:   "go2web",
+	Short: "Go2Web is a CLI tool for searching the web and retrieving results.",
+	Long: `Go2Web is a command-line application that allows users to search the web using various search engines and retrieve results directly in the terminal. It supports features like caching, redirects, and customizable search engines.`,
+	Run: func(cmd *cobra.Command, args []string) {
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+		if searchQuery, _ := cmd.Flags().GetString("search"); searchQuery != "" {
+			cli.HandleSearch(cmd, args)
+		}
+	},
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
@@ -37,15 +27,25 @@ func Execute() {
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.surfer.yaml)")
+	rootCmd.Flags().StringP("search", "s", "", "Search the web with a query")
+	rootCmd.Flags().StringP("engine", "e", "startpage", "Search engine to use (e.g., startpage, mojeek)")
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	OnlyValidWith(rootCmd, "engine", "search") // you can only use engine if search is provided
+
+
 }
+
+func OnlyValidWith(cmd *cobra.Command, dependentFlag, requiredFlag string) error {
+	dependentProvided := cmd.Flags().Changed(dependentFlag)
+	requiredProvided := cmd.Flags().Changed(requiredFlag)
+
+	if dependentProvided && !requiredProvided {
+		return fmt.Errorf("error: the --%s flag is only valid when --%s is also provided", dependentFlag, requiredFlag)
+	}
+	return nil
+}
+
+
 
 

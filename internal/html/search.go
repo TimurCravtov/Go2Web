@@ -9,5 +9,5 @@ type SearchResult struct {
 }
 
 type Search interface {
-	Search(query string, get connect.GetFunc) ([]SearchResult, error)
+	Search(query string, page int, get connect.GetFunc) ([]SearchResult, error)
 }

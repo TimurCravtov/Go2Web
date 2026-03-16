@@ -1,15 +1,11 @@
 package main
 
 import (
-	"fmt"
+	"go2web/cmd"
 	"log/slog"
-	"go2web/internal/html/search_engines"
 	"os"
 	"time"
-	"github.com/0magnet/calvin"
 	"github.com/lmittmann/tint"
-	"go2web/internal/html"
-	"go2web/internal/connect"
 )
 
 func main() {
@@ -21,29 +17,7 @@ func main() {
 
 	slog.SetDefault(logger)
 
-
-	engine := search_engines.NewStartpageSearchEngine("https://www.startpage.com/sp/search?query=")
-
-	query := "cats"
-	response, err := engine.Search(query, 1, connect.Get)
-
-	fmt.Println(calvin.AsciiFont("STARTPAGE"))
-
-	fmt.Println("╭-----------------------------------------------╮")
-	fmt.Printf("| %-42s ⌕  |\n", query);
-	fmt.Println("╰-----------------------------------------------╯")
-
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-		return
-	}
-
-	for _, result := range response {
-		fmt.Printf("Title: %s\n", result.Title)
-		fmt.Printf("URL: %s\n", html.Colorize(result.URL, html.ColorBlue))
-		fmt.Println("--------------------------------------------------")
-	}
-
+	cmd.Execute()
 
 	// cache := connect.NewFileCache("cache")
 
