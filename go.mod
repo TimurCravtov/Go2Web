@@ -5,6 +5,7 @@ go 1.25.1
 require (
 	github.com/0magnet/calvin v0.0.0-20241204203002-126d3bcd81d8 // indirect
 	github.com/PuerkitoBio/goquery v1.11.0 // indirect
+	github.com/TylerBrock/colorjson v0.0.0-20200706003622-8a50f05110d2 // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/aybabtme/rgbterm v0.0.0-20170906152045-cc83f3b3ce59 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect

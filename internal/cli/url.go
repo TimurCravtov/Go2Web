@@ -1,13 +1,15 @@
 package cli
 
 import (
-    "fmt"
-    "go2web/internal/connect"
-    "math"
-    "strings"
-    _ "github.com/mat/besticon/ico"
-    "go2web/internal/printer"
-    "github.com/spf13/cobra"
+	"fmt"
+	"go2web/internal/connect"
+	"go2web/internal/html"
+	"go2web/internal/printer"
+	"math"
+	"strings"
+
+	_ "github.com/mat/besticon/ico"
+	"github.com/spf13/cobra"
 )
 
 func HandleUrlRequest(cmd *cobra.Command, args []string) {
@@ -39,7 +41,25 @@ func HandleUrlRequest(cmd *cobra.Command, args []string) {
         return
     }
 
-    printer := printer.WithHeaders(printer.WithHero(printer.HtmlResponseParser))
+    var basePrinter printer.HttpResponsePrinter
+
+    contentType, err := html.GetContentType(response)
+
+    if err != nil {
+        fmt.Printf("Error determining content type: %v\n", err)
+        return
+    }
+
+    switch contentType {
+    case html.TypeHTML:
+        basePrinter = printer.HtmlResponseParser
+    case html.TypeJSON:
+        basePrinter = printer.JsonPrinter
+    default:
+        basePrinter = printer.HtmlResponseParser
+    }
+
+    printer := printer.WithHeaders(printer.WithHero(basePrinter))
     
     str, _ := printer(urlStr, response);
     
