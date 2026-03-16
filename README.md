@@ -22,5 +22,17 @@ go2web -u "github.com" --no-cache --max-redirects 3 # searches github, no cache,
 go2web -s "hot dogs" -e "mojeek" -d # searches for hotdogs with mojeek in dynamic mode (can move though results) 
 ```
 
+### Running
+
+```bash
+git clone https://github.com/TimurCravtov/Go2WebAlsoKnownAsWebProgammingLab5.git
+cd Go2WebAlsoKnownAsWebProgammingLab5
+go run . 
+## or ##
+go build .
+./go2web
+```
+
+
 ### Demo <3
 
