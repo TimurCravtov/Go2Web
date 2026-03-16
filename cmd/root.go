@@ -34,12 +34,13 @@ func init() {
 	rootCmd.Flags().StringP("search", "s", "", "Search the web with a query")
 	rootCmd.Flags().StringP("engine", "e", "startpage", "Search engine to use (e.g., startpage, mojeek)")
 	rootCmd.Flags().StringP("url", "u", "", "Fetch and display the content of a URL")
+	rootCmd.Flags().IntP("max-redirects", "", 3, "Maximum number of redirects to follow when fetching a URL. Pass -1 ")
 
 	rootCmd.MarkFlagsMutuallyExclusive("search", "url") // you can't use search and url together
 	rootCmd.Flags().BoolP("no-cache", "", false, "Disable caching")
 
 	OnlyValidWith(rootCmd, "engine", "search") // you can only use engine if search is provided
-
+	OnlyValidWith(rootCmd, "max-redirects", "url") // you can only use max-redirects if url is provided
 
 }
 

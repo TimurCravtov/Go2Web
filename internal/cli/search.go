@@ -276,7 +276,7 @@ func HandleSearchDynamic(cmd *cobra.Command, args []string) {
 			return
 		}
 
-		fmt.Printf("%s\n%s\n",
+		fmt.Printf("%s\n\n",
 			page,
 		)
 	}

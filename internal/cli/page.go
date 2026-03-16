@@ -24,7 +24,7 @@ func HandleUrlRequest(cmd *cobra.Command, args []string) {
 		getter = cache.WithCache(getter)
 	}
 
-	getter = connect.WithRedirects(getter)
+	getter = connect.WithRedirects(getter, 3)
 
 	response, err := html.ParsePage(url, getter)
 	if err != nil {
