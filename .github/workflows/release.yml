@@ -1,0 +1,60 @@
+name: Go2Web Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-linux:
+    name: Build Linux Binary
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Build Binary
+        run: |
+          GOOS=linux GOARCH=amd64 go build -v -o go2web-linux-amd64 .
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: go2web-linux-amd64
+
+  build-windows:
+    name: Build Windows Installer
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Build Executable
+        # Compiles the binary directly into the install directory 
+        # so Inno Setup can find it based on: Source: "go2web.exe"
+        run: |
+          go build -v -o scripts/install/go2web.exe .
+
+      - name: Compile Inno Setup Installer
+        # Assumes your file is named installer.iss
+        run: iscc scripts/install/installer.iss
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          # Grabs the output from the ../Output directory defined in your .iss
+          files: scripts/Output/go2web.exe

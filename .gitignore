@@ -37,3 +37,6 @@ vendor/
 Thumbs.db          # Windows
 
 cache/
+
+
+Output/
