@@ -42,6 +42,17 @@ func init() {
 	rootCmd.Flags().StringP("url", "u", "", "Fetch and display the content of a URL")
 	rootCmd.Flags().IntP("max-redirects", "", 10, "Maximum number of redirects to follow when fetching a URL. Pass -1 to not limit redirects. Default is 10.")
 
+
+	// content negotiation
+	rootCmd.Flags().StringArrayP("lang", "l", []string{"en"}, "List of accepted languages for content negotiation (e.g., en, fr, es)")
+	rootCmd.Flags().StringArrayP("charset", "c", []string{"UTF-8"}, "List of accepted charsets for content negotiation (e.g., UTF-8, ISO-8859-1)")
+	rootCmd.Flags().StringArrayP("type", "t", []string{"*/*"}, "List of accepted content types for content negotiation (e.g., application/json, text/plain)")
+
+	// and mark them only for url
+	OnlyValidWith(rootCmd, "lang", "url")
+	OnlyValidWith(rootCmd, "charset", "url")
+	OnlyValidWith(rootCmd, "type", "url")
+
 	rootCmd.MarkFlagsMutuallyExclusive("search", "url") // you can't use search and url together
 	rootCmd.Flags().BoolP("no-cache", "", false, "Disable caching")
 

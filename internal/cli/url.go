@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go2web/internal/connect"
 	"go2web/internal/html"
+	"go2web/internal/html/negociation"
 	"go2web/internal/printer"
 	"math"
 	"strings"
@@ -35,6 +36,30 @@ func HandleUrlRequest(cmd *cobra.Command, args []string) {
         getter = connect.WithRedirects(getter, redirectCount)
     }
 
+
+    languages, _ := cmd.Flags().GetStringArray("lang")
+    charsets, _ := cmd.Flags().GetStringArray("charset")
+    types, _ := cmd.Flags().GetStringArray("type")
+
+    if len(languages) > 0 {
+        getter = html.WithHeaders(
+            negociation.AcceptLanguages(languages),
+        )(getter)
+    }
+
+    if len(charsets) > 0 {
+        getter = html.WithHeaders(
+            negociation.AcceptCharsets(charsets),
+        )(getter)
+    }
+
+    if len(types) > 0 {
+        getter = html.WithHeaders(
+            negociation.AcceptContentTypes(types),
+        )(getter)
+    }
+
+    
     response, err := getter(urlStr, nil, nil)
     if err != nil {
         fmt.Printf("Error fetching page: %v\n", err)
@@ -54,6 +79,7 @@ func HandleUrlRequest(cmd *cobra.Command, args []string) {
     case html.TypeHTML:
         basePrinter = printer.HtmlResponseParser
     case html.TypeJSON:
+
         basePrinter = printer.JsonPrinter
     case html.TypePNG, html.TypeJPEG, html.TypeGIF:
         basePrinter = printer.ImagePrinter
