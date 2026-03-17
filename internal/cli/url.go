@@ -58,7 +58,7 @@ func HandleUrlRequest(cmd *cobra.Command, args []string) {
     case html.TypePNG, html.TypeJPEG, html.TypeGIF:
         basePrinter = printer.ImagePrinter
     default:
-        basePrinter = printer.HtmlResponseParser
+        basePrinter = printer.TextPrinter
     }
 
     printer := printer.WithStatusLine(printer.WithHeaders(printer.WithHero(basePrinter)))
