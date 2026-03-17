@@ -9,6 +9,7 @@ import (
 	"go2web/internal/request"
 	"go2web/internal/request/middleware"
 	"strings"
+
 	"github.com/0magnet/calvin"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
@@ -53,13 +54,10 @@ func HandleSearch(cmd *cobra.Command, args []string) {
 	// select engine
 	engineName, _ := cmd.Flags().GetString("engine")
 	var engine html.Search
-	switch engineName {
-	case "startpage":
-		engine = search_engines.NewStartpageSearchEngine("https://www.startpage.com/sp/search?query=")
-	case "mojeek":
-		engine = search_engines.NewMojeekSearchEngine("https://www.mojeek.com/search?q=")
-	default:
-		fmt.Printf("Unknown search engine: %s\n", engineName)
+	
+	engine, err := getEngineByName(engineName)
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
 		return
 	}
 	fmt.Println(buildHero(engineName, searchQuery))
@@ -138,6 +136,22 @@ func (m searchModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+func getEngineByName(name string) (html.Search, error) {
+	switch name {
+	case "startpage":
+		return search_engines.NewStartpageSearchEngine("https://www.startpage.com/sp/search?query="), nil
+	case "mojeek":
+		return search_engines.NewMojeekSearchEngine("https://www.mojeek.com/search?q="), nil	
+	case "bing":
+		return search_engines.NewBingSearchEngine("https://www.bing.com/search?q="), nil
+	case "duck":
+		fallthrough
+	case "duckduckgo":
+		return search_engines.NewDuckDuckGoSearchEngine("https://html.duckduckgo.com/html/?q="), nil
+	default:
+		return nil, fmt.Errorf("unknown search engine: %s", name)
+	}
+}
 // ── View ──────────────────────────────────────────────────────────────────────
 
 func (m searchModel) View() string {
@@ -234,13 +248,10 @@ func HandleSearchDynamic(cmd *cobra.Command, args []string) {
 
 	engineName, _ := cmd.Flags().GetString("engine")
 	var engine html.Search
-	switch engineName {
-	case "startpage":
-		engine = search_engines.NewStartpageSearchEngine("https://www.startpage.com/sp/search?query=")
-	case "mojeek":
-		engine = search_engines.NewMojeekSearchEngine("https://www.mojeek.com/search?q=")
-	default:
-		fmt.Printf("Unknown search engine: %s\n", engineName)
+	
+	engine, err := getEngineByName(engineName)
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
 		return
 	}
 

@@ -18,12 +18,4 @@ func main() {
 	slog.SetDefault(logger)
 
 	cmd.Execute()
-
-	// cache := connect.NewFileCache("cache")
-
-	// cachedGet := cache.WithCache(connect.Get)
-	// redirectGet := connect.WithRedirects(cachedGet)
-
-	// fmt.Println(html.ParsePage("https://point.md", redirectGet))
-
 }
