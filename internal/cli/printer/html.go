@@ -6,11 +6,11 @@ import (
 	"strings"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/jaytaylor/html2text"
-	"go2web/internal/connect"
-	"go2web/internal/html"
+	"go2web/internal/request"
+	"go2web/internal/cli/printer/utils"
 )
 
-func HtmlResponseParser(urlPath string, response *connect.HttpResponse) (string, error) {
+func HtmlResponseParser(urlPath string, response *request.HttpResponse) (string, error) {
 
     reader := bytes.NewReader(response.Body)
 	doc, err := goquery.NewDocumentFromReader(reader)
@@ -54,7 +54,7 @@ func HtmlResponseParser(urlPath string, response *connect.HttpResponse) (string,
 		return "", err
 	}
 
-	coloredText := html.ColorizeURLs(text)
+	coloredText := utils.ColorizeURLs(text)
 
 	return strings.TrimSpace(coloredText), nil
 }

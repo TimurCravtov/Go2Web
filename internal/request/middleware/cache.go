@@ -1,4 +1,4 @@
-package connect
+package middleware
 
 import (
 	"crypto/sha256"
@@ -11,12 +11,13 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"go2web/internal/request"
 	"time"
 )
 
 type CacheEntry struct {
 	ValidUntil time.Time     `json:"valid_until"`
-	Response   *HttpResponse `json:"response"`
+	Response   *request.HttpResponse `json:"response"`
 }
 
 type FileCache struct {
@@ -30,8 +31,8 @@ func NewFileCache(dir string) *FileCache {
 	}
 }
 
-func (c *FileCache) WithCache(next GetFunc) GetFunc {
-	return func(url string, body []byte, headers map[string]string) (*HttpResponse, error) {
+func (c *FileCache) WithCache(next request.GetFunc) request.GetFunc {
+	return func(url string, body []byte, headers map[string]string) (*request.HttpResponse, error) {
 
 		cachePath := c.getCachePath(url)
 		if cachedResp := c.tryGet(cachePath); cachedResp != nil {
@@ -57,7 +58,7 @@ func (c *FileCache) getCachePath(url string) string {
 	return filepath.Join(c.CacheDir, hash+".json")
 }
 
-func (c *FileCache) tryGet(cacheFile string) *HttpResponse {
+func (c *FileCache) tryGet(cacheFile string) *request.HttpResponse {
 	data, err := os.ReadFile(cacheFile)
 	if err != nil {
 		return nil
@@ -78,7 +79,7 @@ func (c *FileCache) tryGet(cacheFile string) *HttpResponse {
 	return entry.Response
 }
 
-func (c *FileCache) doCache(cacheFile string, resp *HttpResponse) {
+func (c *FileCache) doCache(cacheFile string, resp *request.HttpResponse) {
 	headers := resp.Headers
 
 	// Default: do not cache unless we find a directive

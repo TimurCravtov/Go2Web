@@ -3,11 +3,11 @@ package printer
 import (
     "image"
     "bytes"
-    "go2web/internal/connect"
-    "go2web/internal/printer/utils"
+    "go2web/internal/request"
+    "go2web/internal/cli/printer/utils"
 )
 
-func ImagePrinter(urlPath string, response *connect.HttpResponse) (string, error) {
+func ImagePrinter(urlPath string, response *request.HttpResponse) (string, error) {
     imageBytes := response.Body
 
     config, _, err := image.DecodeConfig(bytes.NewReader(imageBytes))

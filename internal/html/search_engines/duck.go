@@ -3,7 +3,7 @@ package search_engines
 import (
 	"bytes"
 	"fmt"
-	"go2web/internal/connect"
+	"go2web/internal/request"
 	"go2web/internal/html"
 	"net/url"
 
@@ -18,7 +18,7 @@ func NewDuckSearchEngine(searchURL string) *DuckSearchEngine {
 	return &DuckSearchEngine{searchURL: searchURL}
 }
 
-func (d *DuckSearchEngine) Search(query string, page int, get connect.GetFunc) ([]html.SearchResult, error) {
+func (d *DuckSearchEngine) Search(query string, page int, get request.GetFunc) ([]html.SearchResult, error) {
 	// 'kl=uk-en' forces United Kingdom results
 	reqUrl := fmt.Sprintf("https://duckduckgo.com/lite/?q=%s&kl=uk-en", url.QueryEscape(query))
 

@@ -1,14 +1,15 @@
-package connect
+package middleware
 
 import (
 	"fmt"
 	urlpkg "net/url"
 	"slices"
+	"go2web/internal/request"
 )
 
 // WithRedirects wraps a GetFunc to automatically follow HTTP redirects up to maxRedirects times.
-func WithRedirects(next GetFunc, maxRedirects int) GetFunc {
-	return func(url string, body []byte, headers map[string]string) (*HttpResponse, error) {
+func WithRedirects(next request.GetFunc, maxRedirects int) request.GetFunc {
+	return func(url string, body []byte, headers map[string]string) (*request.HttpResponse, error) {
 		currentURL := url
 		visited := make(map[string]struct{})
 

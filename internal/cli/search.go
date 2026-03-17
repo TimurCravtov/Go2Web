@@ -2,12 +2,13 @@ package cli
 
 import (
 	"fmt"
-	"go2web/internal/connect"
+	"go2web/internal/cli/printer"
+	"go2web/internal/cli/printer/utils"
 	"go2web/internal/html"
 	"go2web/internal/html/search_engines"
-	"go2web/internal/printer"
+	"go2web/internal/request"
+	"go2web/internal/request/middleware"
 	"strings"
-
 	"github.com/0magnet/calvin"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
@@ -63,7 +64,7 @@ func HandleSearch(cmd *cobra.Command, args []string) {
 	}
 	fmt.Println(buildHero(engineName, searchQuery))
 	// execute
-	results, err := engine.Search(searchQuery, 1, connect.Get)
+	results, err := engine.Search(searchQuery, 1, request.Get)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		return
@@ -71,7 +72,7 @@ func HandleSearch(cmd *cobra.Command, args []string) {
 	// print results
 	for i, result := range results {
 		fmt.Printf("%d. %s\n", i+1, result.Title)
-		fmt.Printf("  URL: %s\n", html.Colorize(result.URL, html.ColorBlue))
+		fmt.Printf("  URL: %s\n", utils.Colorize(result.URL, utils.ColorBlue))
 		fmt.Println("  " + "─" + "─" + "─" + "─" + "─" + "─" + "─" + "─" + "─" + "─" + "─" + "─" + "─")
 	}
 }
@@ -182,20 +183,20 @@ func (m searchModel) View() string {
 		for i := start; i < end; i++ {
 			r := m.results[i]
 			cursor := "  "
-			titleColor := html.ColorReset
+			titleColor := utils.ColorReset
 			if i == m.cursor {
-				cursor = html.Colorize("▶ ", html.ColorCyan)
-				titleColor = html.ColorCyan
+				cursor = utils.Colorize("▶ ", utils.ColorCyan)
+				titleColor = utils.ColorCyan
 			}
 
 			sb.WriteString(fmt.Sprintf(
 				"%s%d. %s\n",
 				cursor, i+1,
-				html.Colorize(r.Title, titleColor),
+				utils.Colorize(r.Title, titleColor),
 			))
 			sb.WriteString(fmt.Sprintf(
 				"     %s\n",
-				html.Colorize(r.URL, html.ColorBlue),
+				utils.Colorize(r.URL, utils.ColorBlue),
 			))
 			sb.WriteString("   " + strings.Repeat("─", 44) + "\n")
 		}
@@ -208,7 +209,7 @@ func (m searchModel) View() string {
 
 func fetchResults(engine html.Search, query string) tea.Cmd {
 	return func() tea.Msg {
-		results, err := engine.Search(query, 1, connect.Get)
+		results, err := engine.Search(query, 1, request.Get)
 		return searchResultsMsg{results: results, err: err}
 	}
 }
@@ -254,9 +255,9 @@ func HandleSearchDynamic(cmd *cobra.Command, args []string) {
 
 	if fm, ok := final.(searchModel); ok && fm.selected != nil {
 
-		getter := connect.Get
-		getter = connect.WithRedirects(getter, 5)
-		getter = connect.NewFileCache("cache").WithCache(getter)
+		getter := request.Get
+		getter = middleware.WithRedirects(getter, 5)
+		getter = middleware.NewFileCache("cache").WithCache(getter)
 
 		response, err := getter(fm.selected.URL, nil, nil)
 		if err != nil {

@@ -2,13 +2,13 @@ package cli
 
 import (
 	"fmt"
-	"go2web/internal/connect"
+	"go2web/internal/request"
 	"go2web/internal/html"
 	"go2web/internal/html/negociation"
-	"go2web/internal/printer"
+    "go2web/internal/cli/printer"
 	"math"
 	"strings"
-
+    "go2web/internal/request/middleware"
 	_ "github.com/mat/besticon/ico"
 	"github.com/spf13/cobra"
 )
@@ -21,10 +21,10 @@ func HandleUrlRequest(cmd *cobra.Command, args []string) {
         urlStr = "https://" + urlStr
     }
 
-    var getter connect.GetFunc = connect.Get
+    var getter request.GetFunc = request.Get
     noCache, _ := cmd.Flags().GetBool("no-cache")
     if !noCache {
-        cache := connect.NewFileCache("cache")
+        cache := middleware.NewFileCache("cache")
         getter = cache.WithCache(getter)
     }
 
@@ -33,7 +33,7 @@ func HandleUrlRequest(cmd *cobra.Command, args []string) {
         redirectCount = math.MaxInt
     }
     if redirectCount >= 0 {
-        getter = connect.WithRedirects(getter, redirectCount)
+        getter = middleware.WithRedirects(getter, redirectCount)
     }
 
 

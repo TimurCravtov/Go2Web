@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
-
-	"go2web/internal/connect"
+	"go2web/internal/request"
 	"go2web/internal/html"
 
 	"github.com/PuerkitoBio/goquery"
@@ -20,7 +19,7 @@ func NewMojeekSearchEngine(searchURL string) *MojeekSearchEngine {
 	return &MojeekSearchEngine{searchURL: searchURL}
 }
 
-func (m *MojeekSearchEngine) Search(query string, page int, get connect.GetFunc) ([]html.SearchResult, error) {
+func (m *MojeekSearchEngine) Search(query string, page int, get request.GetFunc) ([]html.SearchResult, error) {
 	var headers = map[string]string{
 		"User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
 		"Accept-Language": "en-US,en;q=0.9",

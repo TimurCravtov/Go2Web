@@ -1,12 +1,12 @@
 package html
 
-import "go2web/internal/connect"
+import "go2web/internal/request"
 
 type Headers map[string]string
 
-func WithHeaders(h Headers) func(connect.GetFunc) connect.GetFunc {
-	return func(next connect.GetFunc) connect.GetFunc {
-		return func(url string, body []byte, headers map[string]string) (*connect.HttpResponse, error) {
+func WithHeaders(h Headers) func(request.GetFunc) request.GetFunc {
+	return func(next request.GetFunc) request.GetFunc {
+		return func(url string, body []byte, headers map[string]string) (*request.HttpResponse, error) {
 			headers = mergeHeaders(headers, h)
 			return next(url, body, headers)
 		}

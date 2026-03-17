@@ -1,7 +1,7 @@
 package html
 
 import (
-	"go2web/internal/connect"
+	"go2web/internal/request"
 	"mime"
 	"net/http"
 	"strings"
@@ -28,7 +28,7 @@ func (c ContentType) IsImage() bool {
 	return strings.HasPrefix(string(c), "image/")
 }
 
-func GetContentType(response *connect.HttpResponse) (ContentType, error) {
+func GetContentType(response *request.HttpResponse) (ContentType, error) {
 	typeHeader, ok := response.Headers["content-type"]
 	if !ok {
 

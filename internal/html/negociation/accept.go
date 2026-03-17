@@ -6,7 +6,6 @@ import (
 	"go2web/internal/html"
 )
 
-
 func AcceptLanguages(langs []string) html.Headers {
 	var parts []string
 	for _, lang := range langs {

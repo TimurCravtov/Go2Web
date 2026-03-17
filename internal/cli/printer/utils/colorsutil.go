@@ -1,4 +1,4 @@
-package html
+package utils
 
 import "regexp"
 

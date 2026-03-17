@@ -5,18 +5,16 @@ import (
     "net/url"
     "regexp"
 	"github.com/0magnet/calvin"
-	"go2web/internal/printer/utils"
+	"go2web/internal/cli/printer/utils"
     _ "image/jpeg"
     _ "image/png"
-
-	"go2web/internal/connect"
-	"go2web/internal/html"
+	"go2web/internal/request"
     "strings"
 
 )
 
 func WithHero(next HttpResponsePrinter) HttpResponsePrinter {
-    return func(url string, response *connect.HttpResponse) (string, error) {
+    return func(url string, response *request.HttpResponse) (string, error) {
         hero := buildWebsiteHero(response, url)
         content, err := next(url, response)
         return hero + content, err
@@ -24,11 +22,11 @@ func WithHero(next HttpResponsePrinter) HttpResponsePrinter {
 }
 
 func WithHeaders(next HttpResponsePrinter) HttpResponsePrinter {
-    return func(url string, response *connect.HttpResponse) (string, error) {
+    return func(url string, response *request.HttpResponse) (string, error) {
         var sb strings.Builder
         headers := response.Headers
         for key, value := range headers {
-            sb.WriteString(fmt.Sprintf("%s: %s\n", html.Colorize(key, html.ColorMagenta), value))
+            sb.WriteString(fmt.Sprintf("%s: %s\n", utils.Colorize(key, utils.ColorMagenta), value))
         }
         
         nextResponse, err := next(url, response)
@@ -40,24 +38,24 @@ func WithHeaders(next HttpResponsePrinter) HttpResponsePrinter {
 }
 
 func WithStatusLine(next HttpResponsePrinter) HttpResponsePrinter {
-    return func(url string, response *connect.HttpResponse) (string, error) {
+    return func(url string, response *request.HttpResponse) (string, error) {
         // Determine color based on the first digit of the status code
         var statusColor string
         switch response.StatusCode / 100 {
         case 2:
-            statusColor = html.ColorGreen   // Success
+            statusColor = utils.ColorGreen   // Success
         case 3:
-            statusColor = html.ColorBlue    // Redirects
+            statusColor = utils.ColorBlue    // Redirects
         case 4:
-            statusColor = html.ColorYellow  // Client Errors
+            statusColor = utils.ColorYellow  // Client Errors
         case 5:
-            statusColor = html.ColorRed     // Server Errors
+            statusColor = utils.ColorRed     // Server Errors
         default:
-            statusColor = html.ColorReset   // Fallback for 1xx or unknown
+            statusColor = utils.ColorReset   // Fallback for 1xx or unknown
         }
 
         rawStatus := fmt.Sprintf("%d %s", response.StatusCode, response.StatusText)
-        coloredStatus := html.Colorize(rawStatus, statusColor)
+        coloredStatus := utils.Colorize(rawStatus, statusColor)
         
         statusLine := fmt.Sprintf("Status: %s", coloredStatus)
 
@@ -70,10 +68,10 @@ func WithStatusLine(next HttpResponsePrinter) HttpResponsePrinter {
     }
 }
 
-func buildWebsiteHero(response *connect.HttpResponse, rootUrl string) string {
+func buildWebsiteHero(response *request.HttpResponse, rootUrl string) string {
     faviconUrl := getFavicoLink(response, rootUrl)
 
-	resp, _ := connect.Get(faviconUrl, nil, nil)
+	resp, _ := request.Get(faviconUrl, nil, nil)
 	
     asciiFavicon, err := utils.ImageToAscii(resp.Body, 12, 12)
 	if err != nil {
@@ -141,7 +139,7 @@ func buildWebsiteHero(response *connect.HttpResponse, rootUrl string) string {
     return sb.String()
 }
 
-func getFavicoLink(response *connect.HttpResponse, rootUrl string) string {
+func getFavicoLink(response *request.HttpResponse, rootUrl string) string {
     baseURL, err := url.Parse(rootUrl)
     if err != nil {
         return ""

@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strings"
 
-	"go2web/internal/connect"
+	"go2web/internal/request"
 	"go2web/internal/html"
 
 	"github.com/PuerkitoBio/goquery"
@@ -20,7 +20,7 @@ func NewStartpageSearchEngine(searchURL string) *StartpageSearchEngine {
 	return &StartpageSearchEngine{searchURL: searchURL}
 }
 
-func (s *StartpageSearchEngine) Search(query string, page int, get connect.GetFunc) ([]html.SearchResult, error) {
+func (s *StartpageSearchEngine) Search(query string, page int, get request.GetFunc) ([]html.SearchResult, error) {
 	var headers = map[string]string{
 		"User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
 		"Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
