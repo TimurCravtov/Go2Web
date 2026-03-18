@@ -38,32 +38,53 @@ func HandleUrlRequest(cmd *cobra.Command, args []string) {
     }
 
 
-    languages, _ := cmd.Flags().GetStringArray("lang")
-    charsets, _ := cmd.Flags().GetStringArray("charset")
-    types, _ := cmd.Flags().GetStringArray("type")
+    allHeaders := make(map[string]string)
 
+    languages, _ := cmd.Flags().GetStringArray("lang")
     if len(languages) > 0 {
         slog.Debug("Adding Accept-Language header", "values ", languages)
-        getter = html.WithHeaders(
-            negociation.AcceptLanguages(languages),
-        )(getter)
+        for k, v := range negociation.AcceptLanguages(languages) {
+            allHeaders[k] = v
+        }
     }
 
+    charsets, _ := cmd.Flags().GetStringArray("charset")
     if len(charsets) > 0 {
         slog.Debug("Adding Accept-Charset header with values ", "values", charsets)
-        getter = html.WithHeaders(
-            negociation.AcceptCharsets(charsets),
-        )(getter)
+        for k, v := range negociation.AcceptCharsets(charsets) {
+            allHeaders[k] = v
+        }
     }
 
+    types, _ := cmd.Flags().GetStringArray("type")
     if len(types) > 0 {
         slog.Debug("Adding Accept-Content-Type header with values ", "values", types)
-        getter = html.WithHeaders(
-            negociation.AcceptContentTypes(types),
-        )(getter)
+        for k, v := range negociation.AcceptContentTypes(types) {
+            allHeaders[k] = v
+        }
     }
 
-    
+    headers, _ := cmd.Flags().GetStringArray("header")
+    if len(headers) > 0 {
+        headerMap := make(map[string]string)
+        for _, header := range headers {
+            parts := strings.SplitN(header, ":", 2)
+            if len(parts) != 2 {
+                slog.Warn("Invalid header format, skipping", "header", header)
+                continue
+            }
+            key := strings.TrimSpace(parts[0])
+            value := strings.TrimSpace(parts[1])
+            allHeaders[key] = value // Overwrites if key already exists
+            headerMap[key] = value // For logging
+        }
+        slog.Debug("Adding custom headers", "values", headerMap)
+    }
+
+    if len(allHeaders) > 0 {
+        getter = html.WithHeaders(allHeaders)(getter)
+    }
+
     response, err := getter(urlStr, nil, nil)
     if err != nil {
         slog.Error("Error fetching page", "error", err)

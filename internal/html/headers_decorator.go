@@ -1,6 +1,9 @@
 package html
 
-import "go2web/internal/request"
+import (
+    "go2web/internal/request"
+    "net/http"
+)
 
 type Headers map[string]string
 
@@ -14,11 +17,16 @@ func WithHeaders(h Headers) func(request.GetFunc) request.GetFunc {
 }
 
 func mergeHeaders(base map[string]string, extra Headers) map[string]string {
-	if base == nil {
-		base = make(map[string]string)
-	}
-	for k, v := range extra {
-		base[k] = v
-	}
-	return base
+    merged := make(map[string]string)
+    
+    for k, v := range base {
+        merged[k] = v
+    }
+
+    for k, v := range extra {
+        canonicalKey := http.CanonicalHeaderKey(k)
+        merged[canonicalKey] = v
+    }  
+    
+    return merged
 }

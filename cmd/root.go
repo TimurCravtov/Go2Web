@@ -42,6 +42,7 @@ func init() {
 	rootCmd.Flags().StringP("url", "u", "", "Fetch and display the content of a URL")
 	rootCmd.Flags().IntP("max-redirects", "", 10, "Maximum number of redirects to follow when fetching a URL. Pass -1 to not limit redirects. Default is 10.")
 
+	rootCmd.Flags().StringArrayP("header", "H", []string{}, "Custom header to include in the request (e.g., 'User-Agent: MyAgent'). Can be specified multiple times. Overrides -l, -c, and -t if there are conflicts.")
 
 	// content negotiation
 	rootCmd.Flags().StringArrayP("lang", "l", []string{"en"}, "List of accepted languages for content negotiation (e.g., en, fr, es)")
@@ -58,6 +59,7 @@ func init() {
 
 	OnlyValidWith(rootCmd, "engine", "search") // you can only use engine if search is provided
 	OnlyValidWith(rootCmd, "max-redirects", "url") // you can only use max-redirects if url is provided
+	OnlyValidWith(rootCmd, "header", "url") // you can only use header if url is provided
 
 }
 
